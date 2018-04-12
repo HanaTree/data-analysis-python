@@ -1,6 +1,7 @@
 import csv
 import os
 import numpy as np
+import pandas as pd
 import config
 
 
@@ -27,7 +28,7 @@ def load_data(data_file, usecols):
     return data_arr
 
 def polluted_percent(data_arr):
-    hour_val = np.mean(data_arr[:, 3:], axis=1)
+    hour_val = np.mean(data_arr[:, 5:], axis=1)
     n_hours = hour_val.shape[0]
     n_heavy_hours = hour_val[hour_val > 150].shape[0]
     n_medium_hours = hour_val[(hour_val > 75) & (hour_val <= 150)].shape[0]
@@ -47,7 +48,7 @@ def avg_pm_per_month(data_arr):
         months = np.unique(year_data_arr[:, 1])
         for month in months:
             month_data_arr = year_data_arr[year_data_arr[:, 1] == month]
-            month_avg = np.mean(month_data_arr[:, 3:], axis=0).tolist()
+            month_avg = np.mean(month_data_arr[:, 5:], axis=0).tolist()
 
             row_data = ['{:.0f}-{:02.0f}'.format(year, month)] + month_avg
             results.append(row_data)
@@ -67,13 +68,11 @@ def sort_pollution_by_season(data_arr):
         seasons = np.unique(year_data_arr[:, 2])
         for season in seasons:
             season_data_arr = year_data_arr[year_data_arr[:, 2] == season]
-            season_avg = np.mean(np.mean(season_data_arr[:, 3:], axis=1)[3:], axis=0)
+            season_avg = np.mean(np.mean(season_data_arr[:, 5:], axis=1)[5:], axis=0)
             season_dict['{:.0f}-{}'.format(year, seasons_name[int(season)-1])] = format(season_avg, '.2f')
 
     for key, value in sorted(season_dict.items(), key=lambda item: (float(item[1]), item[0])):
         season_res.append((key, value))
-    # for key, value in season_dict.items():
-    #     season_res.append((key, value))
 
     season_res_arr = np.array(season_res)
     return season_res_arr

@@ -7,7 +7,7 @@ if not os.path.exists(output_path):
     os.makedirs(output_path)
 
 
-common_cols = ['year', 'month', 'season']
+common_cols = ['year', 'month', 'day', 'season', 'PM_US Post']
 
 data_config_dict = {'beijing' : ('BeijingPM20100101_20151231.csv',
                                 ['Dongsi', 'Dongsihuan', 'Nongzhanguan']),
