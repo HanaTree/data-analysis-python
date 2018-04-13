@@ -20,12 +20,12 @@ def get_category_from_json(json_file):
 
 def combine_video_data():
 
-    videos_df_list = []
+    video_df_list = []
 
     for country in config.countries:
         video_df = pd.read_csv(os.path.join(config.dataset_path, country + 'videos.csv'), index_col='video_id', usecols=config.usecols)
         video_df['trending_date'] = pd.to_datetime(video_df['trending_date'], format='%y.%d.%m')
-        video_df['publish_time'] = pd.to_datetime(video_df['publish_time'], format='%y-%m-%dT%H:%M:%S.%fZ')
+        video_df['publish_time'] = pd.to_datetime(video_df['publish_time'], format='%Y-%m-%dT%H:%M:%S.%fZ')
         video_df['publish_date'] = video_df['publish_time'].dt.date
         video_df['publish_date'] = pd.to_datetime(video_df['publish_date'])
 
@@ -43,9 +43,9 @@ def combine_video_data():
     return all_video_df
 
 
-def plot_top10_by_country(all_video_df, col_name, title, save_filename):
+def plot_top10_by_country(video_df, col_name, title, save_filename):
 
-    fig, axes = plt.subplot(len(config.countries), figsize=(10, 8))
+    fig, axes = plt.subplots(len(config.countries), figsize=(10, 8))
     fig.suptitle(title)
 
     for i, country in enumerate(config.countries):
@@ -57,7 +57,7 @@ def plot_top10_by_country(all_video_df, col_name, title, save_filename):
         axes[i].set_title(country)
     plt.tight_layout()
 
-    plt.subplot_adjust(top=0.9)
+    plt.subplots_adjust(top=0.9)
     plt.savefig(os.path.join(config.output_path, save_filename))
     plt.show()
 
@@ -74,9 +74,9 @@ def plot_days_to_trend(video_df, save_filename):
             is_datazoom_show=True, datazoom_range=[0, 50])
 
     line = Line()
-    line.add('Line chart', dayss_df.index.tolist(), days_df.values.tolist())
+    line.add('Line chart', days_df.index.tolist(), days_df.values.tolist())
 
-    overlap.Overlap()
+    overlap = Overlap()
     overlap.add(bar)
     overlap.add(line)
     overlap.render(os.path.join(config.output_path, save_filename))
@@ -84,7 +84,7 @@ def plot_days_to_trend(video_df, save_filename):
 
 def plot_relationship_of_cols(video_df, cols):
 
-    sel_video_df = all_video_df[cols + ['country']]
+    sel_video_df = video_df[cols + ['country']]
     g = sns.pairplot(data=sel_video_df, hue='country')
     g.savefig(os.path.join(config.output_path, 'pair_plot.png'))
     plt.show()
